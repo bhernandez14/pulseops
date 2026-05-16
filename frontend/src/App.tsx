@@ -49,79 +49,113 @@ export default function App() {
       stompClient.deactivate();
     };
   }, []);
+
+  const healthClass =
+    health === "HEALTHY"
+      ? "healthy"
+      : health === "WARN"
+        ? "warn"
+        : health === "CRITICAL"
+          ? "critical"
+          : "";
+
   return (
     <div className="container">
       <h1>PulseOps Dashboard</h1>
-      <div className="grid">
+
+      {/* System Health — centered at the top */}
+      <div className="health-row">
+        <div className="health-card">
+          <h2>System Health</h2>
+          <p className={`health ${healthClass}`}>{health}</p>
+        </div>
+      </div>
+
+      {/* CPU: stat card + chart side by side */}
+      <div className="metric-row">
         <div className="card">
           <h2>CPU</h2>
           <p>{cpu?.cpuUsage ?? "Loading..."}%</p>
         </div>
+        <div className="chart-card">
+          <h2>CPU Usage</h2>
+          <ResponsiveContainer width="100%" height={220}>
+            <LineChart data={history}>
+              <XAxis dataKey="time" tick={{ fontSize: 11 }} />
+              <YAxis domain={[0, 100]} tick={{ fontSize: 11 }} width={32} />
+              <Tooltip
+                formatter={(value: any) => {
+                  return `${Number(value).toFixed(2)}%`;
+                }}
+              />
+              <Line
+                type="monotone"
+                dataKey="cpu"
+                stroke="#22c55e"
+                dot={false}
+                strokeWidth={2}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+
+      {/* Memory: stat card + chart side by side */}
+      <div className="metric-row">
         <div className="card">
           <h2>Memory</h2>
           <p>{memory?.usagePercent ?? "Loading..."}%</p>
         </div>
+        <div className="chart-card">
+          <h2>Memory Usage</h2>
+          <ResponsiveContainer width="100%" height={220}>
+            <LineChart data={history}>
+              <XAxis dataKey="time" tick={{ fontSize: 11 }} />
+              <YAxis domain={[0, 100]} tick={{ fontSize: 11 }} width={32} />
+              <Tooltip
+                formatter={(value: any) => {
+                  return `${Number(value).toFixed(2)}%`;
+                }}
+              />
+              <Line
+                type="monotone"
+                dataKey="memory"
+                stroke="#f59e0b"
+                dot={false}
+                strokeWidth={2}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+
+      {/* Disk: stat card + chart side by side */}
+      <div className="metric-row">
         <div className="card">
           <h2>Disk</h2>
           <p>{disk?.usagePercent ?? "Loading..."}%</p>
         </div>
-        <div className="card">
-          <h2>System Health</h2>
-          <p
-            className={`health ${
-              health === "HEALTHY"
-                ? "healthy"
-                : health === "WARN"
-                  ? "warn"
-                  : health === "CRITICAL"
-                    ? "critical"
-                    : ""
-            }`}
-          >
-            {health}
-          </p>
+        <div className="chart-card">
+          <h2>Disk Usage</h2>
+          <ResponsiveContainer width="100%" height={220}>
+            <LineChart data={history}>
+              <XAxis dataKey="time" tick={{ fontSize: 11 }} />
+              <YAxis domain={[0, 100]} tick={{ fontSize: 11 }} width={32} />
+              <Tooltip
+                formatter={(value: any) => {
+                  return `${Number(value).toFixed(2)}%`;
+                }}
+              />
+              <Line
+                type="monotone"
+                dataKey="disk"
+                stroke="#3b82f6"
+                dot={false}
+                strokeWidth={2}
+              />
+            </LineChart>
+          </ResponsiveContainer>
         </div>
-      </div>
-      <div className="chart-card" style={{ marginTop: 30 }}>
-        <h2>CPU Usage</h2>
-
-        <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={history}>
-            <XAxis dataKey="time" />
-            <YAxis domain={[0, 100]} />
-            <Tooltip />
-            <Line type="monotone" dataKey="cpu" stroke="#22c55e" dot={false} />
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
-      <div className="chart-card">
-        <h2>Memory Usage</h2>
-
-        <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={history}>
-            <XAxis dataKey="time" />
-            <YAxis domain={[0, 100]} />
-            <Tooltip />
-            <Line
-              type="monotone"
-              dataKey="memory"
-              stroke="#f59e0b"
-              dot={false}
-            />
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
-      <div className="chart-card">
-        <h2>Disk Usage</h2>
-
-        <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={history}>
-            <XAxis dataKey="time" />
-            <YAxis domain={[0, 100]} />
-            <Tooltip />
-            <Line type="monotone" dataKey="disk" stroke="#3b82f6" dot={false} />
-          </LineChart>
-        </ResponsiveContainer>
       </div>
     </div>
   );
